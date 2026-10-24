@@ -1,0 +1,599 @@
+<title>Rimal Financing Readiness</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap">
+<style>
+/* Layout: a credit-desk worksheet. Verdict and limit first, then evidence, then the levers and the raw checks. */
+:root{
+  --bg:#f5f6f4; --surface:#ffffff; --ink:#18221f; --muted:#5d6b66; --line:#dde3e0; --soft:#eef2f0;
+  --accent:#0f6b5c; --accent-soft:#e1efeb; --good:#1d7a45; --warn:#a56200; --bad:#b3261e;
+  --good-soft:#e3f2e8; --warn-soft:#fbefd9; --bad-soft:#fbe4e2;
+  --chart-a:#0f6b5c; --chart-b:#c27a1a; --chart-c:#5d6b66;
+  --f-display:"Newsreader",Georgia,serif; --f-body:"IBM Plex Sans",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111816; --surface:#18211e; --ink:#e6ede9; --muted:#9aaba4; --line:#2a3632; --soft:#1e2925;
+  --accent:#4fbfa9; --accent-soft:#173a33; --good:#5ccf8a; --warn:#f0b04f; --bad:#ff8a80;
+  --good-soft:#163323; --warn-soft:#3a2b12; --bad-soft:#3d1c1a; --chart-a:#4fbfa9; --chart-b:#f0b04f; --chart-c:#9aaba4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --surface:#18211e; --ink:#e6ede9; --muted:#9aaba4; --line:#2a3632; --soft:#1e2925;
+  --accent:#4fbfa9; --accent-soft:#173a33; --good:#5ccf8a; --warn:#f0b04f; --bad:#ff8a80;
+  --good-soft:#163323; --warn-soft:#3a2b12; --bad-soft:#3d1c1a; --chart-a:#4fbfa9; --chart-b:#f0b04f; --chart-c:#9aaba4; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+h1,h2{font-family:var(--f-display);font-weight:600;text-wrap:balance;margin:0}
+h1{font-size:30px;line-height:1.15}
+h2{font-size:21px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;font-weight:600}
+.num,td.n,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.sub{color:var(--muted);margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+button,.btn{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer}
+button:hover,.btn:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=file]{display:none}
+.banner{background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+.verdict{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:start}
+@media (max-width:760px){.verdict{grid-template-columns:1fr}}
+.big{font-family:var(--f-display);font-size:44px;line-height:1;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.neutral{background:var(--soft);color:var(--muted)}
+.score{display:grid;gap:6px}
+.score-row{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line)}
+.score-row:last-child{border-bottom:0}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;transform:translateY(1px)}
+.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+.score-row .why{color:var(--muted);font-size:12.5px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px;display:grid;gap:2px}
+.kpi .v{font-family:var(--f-mono);font-size:19px;font-weight:500}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .h{font-size:11.5px;color:var(--muted)}
+.chartbox{position:relative;height:280px}
+.chartbox.small{height:170px}
+.tbl{overflow-x:auto;max-height:520px;overflow-y:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--soft);font-weight:600;font-size:12px;color:var(--muted);z-index:1}
+td.n,th.n{text-align:right}
+tr.excluded td{color:var(--muted)}
+.levers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.lever{display:grid;gap:4px}
+.lever label{font-size:12.5px;color:var(--muted)}
+.lever output{font-family:var(--f-mono);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.calc{display:grid;gap:4px;font-size:13.5px}
+.calc div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.calc div.total{border-bottom:0;font-weight:600;font-size:15px}
+.flags{display:grid;gap:10px}
+.flag{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:12px 14px;border:1px solid var(--line);border-left-width:4px;border-radius:8px;background:var(--surface)}
+.flag.bad{border-left-color:var(--bad)}.flag.warn{border-left-color:var(--warn)}.flag.good{border-left-color:var(--good)}
+.flag b{display:block}
+.flag p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.flag details{margin-top:6px;font-size:12.5px}
+.flag summary{cursor:pointer;color:var(--accent)}
+.muted{color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;transform:translateY(1px)}
+ul.tight{margin:0;padding-left:18px;display:grid;gap:4px}
+.foot{font-size:12.5px;color:var(--muted)}
+.toast{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;font-size:13px}
+pre.json{max-height:360px;overflow:auto;background:var(--soft);padding:12px;border-radius:8px;font-size:12px;margin:0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Qawafel · financing package · prototype</div>
+      <h1 id="coName">Loading…</h1>
+      <div class="sub" id="coMeta"></div>
+    </div>
+    <div class="actions">
+      <label class="btn" for="invFile">Upload invoices (.xlsx / .csv)</label>
+      <input type="file" id="invFile" accept=".xlsx,.xls,.csv">
+      <label class="btn" for="bankFile">Upload bank statement (.csv)</label>
+      <input type="file" id="bankFile" accept=".csv">
+      <button id="resetBtn" type="button">Use sample data</button>
+      <button id="pkgBtn" class="primary" type="button">View bank package (JSON)</button>
+    </div>
+  </header>
+  <div class="banner" id="srcBanner"></div>
+
+  <section class="panel" aria-labelledby="h-verdict">
+    <div class="verdict">
+      <div style="display:grid;gap:10px">
+        <h3 id="h-verdict">Package readiness</h3>
+        <div><span class="pill" id="verdictPill"></span></div>
+        <div class="big num" id="limitBig"></div>
+        <div class="muted" id="limitNote"></div>
+        <div class="foot">This is an indicative figure to help Qawafel and the bank decide what to look at. The bank makes the credit decision.</div>
+      </div>
+      <div class="score" id="scorecard"></div>
+    </div>
+  </section>
+
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>Sales vs cash that reached the bank</h2>
+      <div class="legend"><span><i class="sw" style="background:var(--chart-a)"></i>Net invoiced sales</span><span><i class="sw" style="background:var(--chart-b)"></i>Customer money in bank</span></div>
+      <div class="chartbox"><canvas id="chSales" aria-label="Monthly net sales and bank receipts"></canvas></div>
+      <div class="foot" id="salesNote"></div>
+    </section>
+    <section class="panel">
+      <h2>Bank balance</h2>
+      <div class="legend"><span><i class="sw" style="background:var(--chart-a)"></i>Daily closing balance</span><span><i class="sw" style="background:var(--chart-c)"></i>Lowest point</span></div>
+      <div class="chartbox small"><canvas id="chBal" aria-label="Daily bank balance"></canvas></div>
+      <h3 style="margin-top:6px">Receivables aging at the as-of date</h3>
+      <div class="chartbox small"><canvas id="chAging" aria-label="Receivables aging"></canvas></div>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="h-bb">
+    <h2 id="h-bb">Borrowing base: how much could be advanced against open invoices</h2>
+    <p class="muted" style="margin:0">Move the levers to see how the bank's policy changes the limit. Defaults are typical for Saudi invoice-financing products; they are assumptions to confirm with the bank.</p>
+    <div class="levers">
+      <div class="lever"><label for="lvAdv">Advance rate</label><input type="range" id="lvAdv" min="50" max="90" step="5" value="80"><output id="oAdv"></output></div>
+      <div class="lever"><label for="lvDpd">Exclude invoices overdue by more than</label><input type="range" id="lvDpd" min="0" max="120" step="15" value="60"><output id="oDpd"></output></div>
+      <div class="lever"><label for="lvCap">Max share of the base from one buyer</label><input type="range" id="lvCap" min="10" max="50" step="5" value="25"><output id="oCap"></output></div>
+      <div class="lever"><label for="lvLate">Exclude buyers who pay late on average by more than</label><input type="range" id="lvLate" min="5" max="60" step="5" value="30"><output id="oLate"></output></div>
+      <div class="lever"><label for="lvCash">Cap limit at months of verified collections</label><input type="range" id="lvCash" min="0.5" max="3" step="0.25" value="1"><output id="oCash"></output></div>
+    </div>
+    <div class="grid2">
+      <div class="calc" id="bbCalc"></div>
+      <div class="foot" id="bbWhy"></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-buyers">
+    <h2 id="h-buyers">Buyers</h2>
+    <p class="muted" style="margin:0">Who pays the wholesaler, how fast, and whether the money shows up in the bank. Names that share a VAT number are merged.</p>
+    <div class="tbl"><table id="buyerTbl"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-checks">
+    <h2 id="h-checks">Data checks</h2>
+    <p class="muted" style="margin:0">Each check says what was found and what the analyst should do. Fixes already applied to the numbers above are marked.</p>
+    <div class="flags" id="flags"></div>
+  </section>
+
+  <section class="panel" id="pkgPanel" hidden>
+    <div class="top"><h2>Bank package (what gets sent)</h2><button id="copyPkg" type="button">Copy JSON</button></div>
+    <pre class="json mono" id="pkgJson"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>How the numbers are worked out</h2>
+    <ul class="tight" id="method">
+      <li><b>Net sales</b> = invoice net amounts (excluding 15% VAT) minus credit notes, after removing duplicate invoice numbers.</li>
+      <li><b>Customer money in bank</b> = credits that are buyer transfers or cash deposits. Loans, owner top-ups, transfers between own accounts and tax refunds are left out.</li>
+      <li><b>Cash-verified sales</b>: for each buyer, what the invoice file says was paid is compared with what that buyer actually transferred. Cash buyers are compared, as a group, with branch cash deposits.</li>
+      <li><b>DSO</b> (days sales outstanding) = open receivables ÷ last 90 days of gross sales × 90.</li>
+      <li><b>Days late</b> = paid date minus due date, averaged by invoice value.</li>
+      <li><b>Borrowing base</b> = open, not-too-overdue invoices from buyers who pay reliably and whose payments show in the bank, less recent credit notes, capped per buyer, times the advance rate, capped again by monthly verified collections.</li>
+      <li>Scorecard thresholds are my own first guesses, set out in the README, and should be replaced by the partner bank's credit policy.</li>
+    </ul>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!--DATA-->
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const SAR = v => "SAR " + Math.round(v).toLocaleString("en-US");
+const sarK = v => Math.abs(v) >= 1e6 ? "SAR " + (v/1e6).toFixed(2) + "M" : "SAR " + Math.round(v/1e3).toLocaleString("en-US") + "k";
+const pct = (v, d=0) => (v*100).toFixed(d) + "%";
+const day = s => Date.UTC(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) / 864e5;
+const iso = d => new Date(d*864e5).toISOString().slice(0,10);
+const ym = s => s.slice(0,7);
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const monLabel = k => MON[+k.slice(5,7)-1] + " " + k.slice(2,4);
+const norm = s => String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const sum = (a, f = x => x) => a.reduce((s, x) => s + f(x), 0);
+let state = { source: "sample", invFile: null, bankFile: null };
+let raw = null;          // { company, invoices[], bank[] }
+let A = null;            // analysis result
+const charts = {};
+
+/* ---------- input normalisation ---------- */
+const COLS = {
+  no: ["invoice no","invoice number","invoice #","inv no","number","رقم الفاتورة"],
+  issue: ["issue date","invoice date","date","تاريخ"],
+  due: ["due date","due"],
+  customer: ["customer","buyer","client","customer name","العميل"],
+  vatNo: ["customer vat no","customer vat","buyer vat","vat no","vat number","tax number"],
+  net: ["net amount (sar)","net amount","net","amount excl vat","subtotal"],
+  vat: ["vat 15% (sar)","vat amount","vat","tax"],
+  total: ["total (sar)","total","amount incl vat","gross"],
+  terms: ["payment terms (days)","terms","payment terms"],
+  status: ["status","payment status"],
+  paidDate: ["paid date","payment date","date paid"],
+  paidAmount: ["paid amount (sar)","paid amount","amount paid"],
+  ref: ["reference","ref","original invoice"],
+};
+function toIso(v){
+  if (v == null || v === "") return null;
+  if (v instanceof Date) return new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate())).toISOString().slice(0,10);
+  if (typeof v === "number") return iso(Math.round(v) - 25569);            // Excel serial
+  const s = String(v).trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return m[0];
+  m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);                  // assume dd/mm/yyyy (Saudi convention)
+  if (m) return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
+  return null;
+}
+const numv = v => typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[^0-9.\-]/g,"")) || 0;
+function mapRows(rows){
+  const keys = Object.keys(rows[0] || {});
+  const pick = {};
+  for (const [f, names] of Object.entries(COLS)) {
+    pick[f] = keys.find(k => names.includes(k.trim().toLowerCase())) || keys.find(k => names.some(n => k.trim().toLowerCase().startsWith(n)));
+  }
+  const missing = ["no","issue","customer","net"].filter(f => !pick[f]);
+  if (missing.length) throw new Error("Couldn't find these columns: " + missing.join(", ") + ". Rename them to match the sample file's headers.");
+  return rows.map(r => {
+    const net = numv(r[pick.net]);
+    const vat = pick.vat ? numv(r[pick.vat]) : Math.round(net*15)/100;
+    return {
+      no: String(r[pick.no]).trim(), issue: toIso(r[pick.issue]), due: toIso(r[pick.due]) || toIso(r[pick.issue]),
+      customer: String(r[pick.customer]).trim(), vatNo: pick.vatNo ? String(r[pick.vatNo] ?? "").trim() : "",
+      net, vat, total: pick.total ? numv(r[pick.total]) : net + vat, terms: pick.terms ? numv(r[pick.terms]) : null,
+      status: pick.status ? String(r[pick.status] ?? "") : "", paidDate: pick.paidDate ? toIso(r[pick.paidDate]) : null,
+      paidAmount: pick.paidAmount ? numv(r[pick.paidAmount]) : 0, ref: pick.ref ? String(r[pick.ref] ?? "") : "",
+    };
+  }).filter(r => r.no && r.issue);
+}
+function fromSample(){
+  const d = window.SAMPLE_DATA;
+  return { company: d.company, invoices: mapRows(d.invoices), bank: d.bank.map(b => ({...b})) };
+}
+
+/* ---------- analysis ---------- */
+const NON_SALES = [
+  [/OWN ACCT|OWN ACCOUNT|INTERNAL TRF/, "Transfer between own accounts"],
+  [/CAPITAL|INJECTION|OWNER/, "Owner money in"],
+  [/LOAN DISB|FINANCING DISB|LOAN CREDIT/, "Loan drawdown"],
+  [/REFUND|ZATCA|REVERSAL/, "Refund / reversal"],
+];
+function analyse(data, opt){
+  const flags = [];
+  const bank = data.bank.slice().sort((a,b) => a.date < b.date ? -1 : 1);
+  const asOf = bank.length ? bank.at(-1).date : data.invoices.map(i => i.issue).sort().at(-1);
+  const asOfD = day(asOf);
+  const startD = day(asOf.slice(0,7) + "-01") - 334;      // ~12 calendar months
+  const months = []; { let y = +asOf.slice(0,4), m = +asOf.slice(5,7); for (let i=0;i<12;i++){ months.unshift(`${y}-${String(m).padStart(2,"0")}`); m--; if(!m){m=12;y--;} } }
+  const inWin = s => s && ym(s) >= months[0] && s <= asOf;
+
+  // 1. duplicates
+  const seen = new Map(), dups = [];
+  const invAll = [];
+  for (const r of data.invoices) {
+    const k = r.no + "|" + norm(r.vatNo || r.customer);
+    if (seen.has(k)) { dups.push(r); continue; }
+    seen.set(k, r); invAll.push(r);
+  }
+  if (dups.length) flags.push({ sev:"warn", title:`${dups.length} duplicate invoice rows removed`, body:`Same invoice number and buyer appear twice (likely re-exported). ${SAR(sum(dups, d=>d.net))} of net sales was not double-counted.`, fixed:true, rows:dups.slice(0,10).map(d=>`${d.no} · ${d.customer} · ${SAR(d.net)}`) });
+
+  // 2. VAT arithmetic
+  const vatBad = invAll.filter(r => r.net > 0 && Math.abs(r.vat - r.net*0.15) > Math.max(1, r.net*0.005));
+  if (vatBad.length) flags.push({ sev:"warn", title:`${vatBad.length} invoices where VAT is not 15% of net`, body:"Probably typed by hand. Net amounts are used, so revenue is unaffected, but ask the SME to correct these before the bank sees them; they will look like errors in a ZATCA check.", rows:vatBad.slice(0,10).map(r=>`${r.no} · net ${SAR(r.net)} · VAT ${SAR(r.vat)} (expected ${SAR(r.net*0.15)})`) });
+
+  // 3. buyer identity (merge by VAT no.)
+  const nameByVat = new Map();
+  for (const r of invAll) if (r.vatNo) { const m = nameByVat.get(r.vatNo) || new Map(); m.set(r.customer, (m.get(r.customer)||0)+1); nameByVat.set(r.vatNo, m); }
+  const variants = [];
+  for (const [v, m] of nameByVat) if (m.size > 1) variants.push([...m.entries()].sort((a,b)=>b[1]-a[1]));
+  const canon = r => { const m = r.vatNo && nameByVat.get(r.vatNo); return m ? [...m.entries()].sort((a,b)=>b[1]-a[1])[0][0] : r.customer; };
+  invAll.forEach(r => r.buyer = canon(r));
+  if (variants.length) flags.push({ sev:"warn", title:`${variants.length} buyer${variants.length>1?"s":""} spelled more than one way`, body:"Rows with the same VAT number but different names were merged. Without this the largest buyer's share would look smaller than it is.", fixed:true, rows:variants.map(v=>v.map(([n,c])=>`${n} (${c} rows)`).join("  =  ")) });
+
+  const inv = invAll.filter(r => r.net > 0 && !/^CN/i.test(r.no) && inWin(r.issue));
+  const cns = invAll.filter(r => (r.net < 0 || /^CN/i.test(r.no)) && inWin(r.issue));
+
+  // 4. coverage
+  const byMonth = Object.fromEntries(months.map(k => [k, {sales:0, cn:0, receipts:0, count:0}]));
+  inv.forEach(r => { const b = byMonth[ym(r.issue)]; if (b){ b.sales += r.net; b.count++; } });
+  cns.forEach(r => { const b = byMonth[ym(r.issue)]; if (b) b.cn += Math.abs(r.net); });
+  const empty = months.filter(k => byMonth[k].count === 0);
+  if (empty.length) flags.push({ sev:"bad", title:`No invoices in ${empty.length} month${empty.length>1?"s":""}`, body:`Missing: ${empty.map(monLabel).join(", ")}. Ask the SME to upload them or confirm the business was closed.` });
+  else flags.push({ sev:"good", title:"All 12 months have invoices", body:`${inv.length.toLocaleString()} invoices and ${cns.length} credit notes from ${monLabel(months[0])} to ${monLabel(months.at(-1))}.` });
+
+  // 5. bank classification
+  const credits = bank.filter(t => t.amount > 0 && inWin(t.date));
+  const debits = bank.filter(t => t.amount < 0 && inWin(t.date));
+  const nonSales = [];
+  credits.forEach(t => {
+    const d = t.description.toUpperCase();
+    const hit = NON_SALES.find(([re]) => re.test(d));
+    t.cls = hit ? "non_sales" : /CASH DEP/.test(d) ? "cash" : "customer";
+    if (hit) { t.why = hit[1]; nonSales.push(t); }
+  });
+  if (nonSales.length) flags.push({ sev:"warn", title:`${SAR(sum(nonSales,t=>t.amount))} of bank credits are not sales`, body:"Left out of sales and cash-flow figures. The bank will ask why owner money or transfers were needed; it usually points to a working-capital gap, which is what this facility is for.", fixed:true, rows:nonSales.map(t=>`${t.date} · ${t.description} · ${SAR(t.amount)} · ${t.why}`) });
+  credits.filter(t => t.cls !== "non_sales").forEach(t => { const b = byMonth[ym(t.date)]; if (b) b.receipts += t.amount; });
+
+  // 6. buyers + reconciliation
+  const buyers = new Map();
+  const B = n => { if (!buyers.has(n)) buyers.set(n, { name:n, sales:0, gross:0, count:0, paidSheet:0, bank:0, lateW:0, lateN:0, onTime:0, paidCount:0, open:0, openRows:[], cn:0, cnRecent:0, terms:[], cash:false }); return buyers.get(n); };
+  for (const r of inv) {
+    const b = B(r.buyer); b.sales += r.net; b.gross += r.total; b.count++; if (r.terms != null) b.terms.push(r.terms);
+    if (r.paidDate && r.paidDate <= asOf) { b.paidSheet += r.paidAmount; const late = day(r.paidDate) - day(r.due); b.lateW += late * r.total; b.lateN += r.total; b.paidCount++; if (late <= 0) b.onTime++; }
+    const out = r.total - (r.paidDate && r.paidDate <= asOf ? r.paidAmount : 0);
+    if (out > 1) { b.open += out; b.openRows.push({ ...r, out, dpd: asOfD - day(r.due) }); }
+  }
+  for (const r of cns) { const b = B(r.buyer); b.cn += Math.abs(r.total); if (asOfD - day(r.issue) <= 60) b.cnRecent += Math.abs(r.total); }
+  for (const b of buyers.values()) { b.cash = b.terms.length > 0 && b.terms.every(t => t === 0); b.avgTerms = b.terms.length ? sum(b.terms)/b.terms.length : 30; }
+  // match bank credits to buyers by name (first 12 normalised chars; payer names are often truncated)
+  const custCredits = credits.filter(t => t.cls === "customer");
+  const keys = [...buyers.values()].filter(b => !b.cash).map(b => [b, norm(b.name).slice(0, 12)]);
+  const unmatched = [];
+  for (const t of custCredits) {
+    const d = norm(t.description);
+    const hit = keys.find(([, k]) => d.includes(k));
+    if (hit) hit[0].bank += t.amount; else unmatched.push(t);
+  }
+  const cashBuyers = [...buyers.values()].filter(b => b.cash);
+  const cashDeposits = sum(credits.filter(t => t.cls === "cash"), t => t.amount);
+  const cashSheet = sum(cashBuyers, b => b.paidSheet);
+  const cashRatio = cashSheet ? Math.min(1, cashDeposits / cashSheet) : 1;
+  for (const b of buyers.values()) {
+    b.verified = b.cash ? b.paidSheet * cashRatio : Math.min(b.bank, b.paidSheet);
+    b.verRatio = b.paidSheet ? b.verified / b.paidSheet : (b.cash ? cashRatio : null);
+    b.avgLate = b.lateN ? b.lateW / b.lateN : null;
+    b.onTimeRate = b.paidCount ? b.onTime / b.paidCount : null;
+  }
+  const paidSheet = sum([...buyers.values()], b => b.paidSheet);
+  const verified = sum([...buyers.values()], b => b.verified);
+  const verRatio = paidSheet ? verified / paidSheet : 0;
+  const ghosts = [...buyers.values()].filter(b => !b.cash && b.paidSheet > 50000 && b.verRatio < 0.5);
+  ghosts.forEach(g => flags.push({ sev:"bad", title:`${g.name}: ${SAR(g.paidSheet)} marked paid, ${SAR(g.bank)} found in the bank`, body:"The invoice file says this buyer paid, but no transfers from them reach the business account. Possible reasons: paid in cash and not deposited, paid into another account, or the invoices are not genuine. Excluded from the borrowing base until the SME explains and provides proof.", rows:[`${g.count} invoices · ${SAR(g.sales)} net sales · ${pct(g.sales/sum(inv,r=>r.net),1)} of total`] }));
+  if (unmatched.length) flags.push({ sev:"warn", title:`${unmatched.length} customer transfers could not be tied to a buyer`, body:`${SAR(sum(unmatched,t=>t.amount))} in total. Usually short payer names. Counted in cash flow, not in per-buyer verification.`, rows:unmatched.slice(0,8).map(t=>`${t.date} · ${t.description} · ${SAR(t.amount)}`) });
+  if (cashBuyers.length) flags.push({ sev: cashRatio > 0.95 ? "good" : "warn", title:`Cash sales: ${pct(cashRatio)} deposited`, body:`${cashBuyers.length} buyers pay cash on delivery (${SAR(cashSheet)}). Branch cash deposits over the period total ${SAR(cashDeposits)}.` });
+
+  // 7. aging
+  const openRows = [...buyers.values()].flatMap(b => b.openRows);
+  const aging = [["Not due", r => r.dpd <= 0], ["1–30", r => r.dpd > 0 && r.dpd <= 30], ["31–60", r => r.dpd > 30 && r.dpd <= 60], ["61–90", r => r.dpd > 60 && r.dpd <= 90], ["90+", r => r.dpd > 90]]
+    .map(([l, f]) => ({ label:l, amount: sum(openRows.filter(f), r => r.out) }));
+  const openAR = sum(openRows, r => r.out);
+  const over90 = openRows.filter(r => r.dpd > 90);
+  if (over90.length) flags.push({ sev:"warn", title:`${over90.length} invoices more than 90 days overdue`, body:`${SAR(sum(over90,r=>r.out))} outstanding. Treat as doubtful; excluded from the borrowing base at the default setting.`, rows:over90.slice(0,10).map(r=>`${r.no} · ${r.buyer} · ${SAR(r.out)} · ${Math.round(r.dpd)} days past due`) });
+  const cnTotal = sum(cns, r => Math.abs(r.net));
+  const netSales = sum(inv, r => r.net) - cnTotal;
+  flags.push({ sev: cnTotal / sum(inv, r=>r.net) > 0.05 ? "warn" : "good", title:`Credit notes are ${pct(cnTotal/sum(inv,r=>r.net),1)} of sales`, body:`${cns.length} credit notes, ${SAR(cnTotal)} net. ${cnTotal / sum(inv, r=>r.net) > 0.05 ? "Above the 5% we would expect for FMCG; ask why." : "Within the usual range for FMCG returns and expiries."}` });
+
+  // 8. KPIs
+  const ms = months.map(k => byMonth[k].sales - byMonth[k].cn);
+  const mean = sum(ms)/12, sd = Math.sqrt(sum(ms, v => (v-mean)**2)/12), cov = sd/mean;
+  const h1 = sum(ms.slice(0,3)), h2 = sum(ms.slice(9)), growth = h2/h1 - 1;   // last 3 vs first 3 months: both outside Ramadan, so seasonality doesn't distort it
+  const last90gross = sum(inv.filter(r => asOfD - day(r.issue) < 90), r => r.total);
+  const dso = last90gross ? openAR / last90gross * 90 : 0;
+  const allB = [...buyers.values()].sort((a,b) => b.sales - a.sales);
+  const totSales = sum(allB, b => b.sales);
+  const top1 = allB[0], top5 = sum(allB.slice(0,5), b => b.sales) / totSales;
+  const hhi = sum(allB, b => (b.sales/totSales)**2);
+  const lateAll = sum(allB, b => b.lateW) / Math.max(1, sum(allB, b => b.lateN));
+  const termsW = sum(inv, r => (r.terms ?? 30) * r.total) / sum(inv, r => r.total);
+  const balances = bank.filter(t => inWin(t.date));
+  const minBal = balances.reduce((m, t) => t.balance < m.balance ? t : m, balances[0] || {balance:0, date:asOf});
+  const monthEnd = months.map(k => { const t = balances.filter(x => ym(x.date) === k); return t.length ? t.at(-1).balance : null; });
+  const avgBal = sum(monthEnd.filter(v => v != null)) / monthEnd.filter(v => v != null).length;
+  const loanPays = debits.filter(t => /LOAN|INSTAL|FINANC/i.test(t.description));
+  const debtMonthly = sum(loanPays, t => -t.amount) / 12;
+  const outflowMonthly = sum(debits, t => -t.amount) / 12;
+  const receiptsMonthly = sum(months, k => byMonth[k].receipts) / 12;
+  // operating cash surplus per month (customer receipts minus non-debt outflows)
+  const opSurplus = receiptsMonthly - (outflowMonthly - debtMonthly);
+  const dscr = debtMonthly ? opSurplus / debtMonthly : null;
+  if (debtMonthly) flags.push({ sev:"warn", title:`Existing loan repayments of ${SAR(debtMonthly)} a month`, body:`Found ${loanPays.length} instalment debits (e.g. "${esc(loanPays[0].description)}"). The SME must declare this facility; the bank will check it against SIMAH.` });
+
+  // 9. borrowing base
+  const totalOpenEligible = [];
+  for (const b of allB) {
+    let reason = null;
+    if (b.cash) reason = "Pays cash, no receivable";
+    else if (b.verRatio != null && b.verRatio < 0.8) reason = "Payments not found in bank";
+    else if (b.avgLate != null && b.avgLate > opt.late) reason = `Pays ${Math.round(b.avgLate)} days late on average`;
+    const elig = reason ? 0 : sum(b.openRows.filter(r => r.dpd <= opt.dpd), r => r.out);
+    b.eligRaw = Math.max(0, elig - (reason ? 0 : b.cnRecent));
+    b.exclReason = reason;
+    totalOpenEligible.push(b.eligRaw);
+  }
+  const rawBase = sum(totalOpenEligible);
+  const cap = rawBase * opt.cap;
+  let capCut = 0;
+  for (const b of allB) { b.elig = Math.min(b.eligRaw, cap); capCut += b.eligRaw - b.elig; }
+  const base = rawBase - capCut;
+  const overdueCut = sum(allB.filter(b => !b.exclReason), b => sum(b.openRows.filter(r => r.dpd > opt.dpd), r => r.out));
+  const buyerCut = sum(allB.filter(b => b.exclReason && !b.cash), b => b.open);
+  const cnCut = sum(allB.filter(b => !b.exclReason), b => Math.min(b.cnRecent, sum(b.openRows.filter(r => r.dpd <= opt.dpd), r => r.out)));
+  const verifiedMonthly = verified / 12;
+  const advance = base * opt.adv;
+  const cashCap = verifiedMonthly * opt.cash;
+  const limit = Math.max(0, Math.min(advance, cashCap));
+
+  // 10. scorecard
+  const sc = [];
+  const S = (name, sev, value, why) => sc.push({ name, sev, value, why });
+  S("Cash-verified sales", verRatio >= 0.9 ? "good" : verRatio >= 0.75 ? "warn" : "bad", pct(verRatio), "Share of 'paid' invoices that show up as money in the bank. 90%+ is good.");
+  S("Sales stability", cov <= 0.2 ? "good" : cov <= 0.35 ? "warn" : "bad", "CoV " + cov.toFixed(2), "Month-to-month variation. Ramadan and Eid peaks are normal in FMCG.");
+  S("Growth", growth >= 0 ? "good" : growth > -0.1 ? "warn" : "bad", (growth >= 0 ? "+" : "") + pct(growth,1), "Last 3 months vs first 3 months. Both sit outside Ramadan and Eid, so the comparison is fair.");
+  S("Collections", lateAll <= 10 ? "good" : lateAll <= 20 ? "warn" : "bad", `${lateAll.toFixed(1)} days late`, `Value-weighted. DSO ${Math.round(dso)} days vs ${Math.round(termsW)}-day average terms.`);
+  S("Buyer concentration", top1.sales/totSales <= 0.2 ? "good" : top1.sales/totSales <= 0.3 ? "warn" : "bad", pct(top1.sales/totSales,1) + " top buyer", `Top 5 buyers ${pct(top5)} of sales; HHI ${hhi.toFixed(3)}.`);
+  S("Liquidity", minBal.balance >= outflowMonthly*0.25 ? "good" : minBal.balance > 0 ? "warn" : "bad", sarK(minBal.balance) + " low", `Lowest balance on ${minBal.date}, against ${sarK(outflowMonthly)} of monthly outflows.`);
+  S("Debt service", dscr == null ? "good" : dscr >= 1.5 ? "good" : dscr >= 1.1 ? "warn" : "bad", dscr == null ? "No loans seen" : dscr.toFixed(2) + "× cover", "Monthly operating cash surplus ÷ existing loan instalments.");
+  const blockers = flags.filter(f => f.sev === "bad").length;
+  S("Data quality", blockers ? "bad" : flags.filter(f => f.sev === "warn" && !f.fixed).length > 2 ? "warn" : "good", blockers ? `${blockers} blocking` : "No blockers", "Blocking issues must be resolved by the SME before the bank sees the package.");
+  const nBad = sc.filter(s => s.sev === "bad").length, nWarn = sc.filter(s => s.sev === "warn").length;
+  const verdict = nBad === 0 && nWarn <= 2 ? ["good","Ready to send"] : nBad <= 1 ? ["warn","Send after fixes"] : ["bad","Not ready"];
+
+  return { asOf, months, byMonth, ms, netSales, mean, cov, growth, dso, termsW, lateAll, top1, top5, hhi, totSales, verRatio, verified, paidSheet,
+    minBal, avgBal, monthEnd, balances, debtMonthly, dscr, receiptsMonthly, outflowMonthly, opSurplus, aging, openAR, buyers: allB, flags, sc, verdict,
+    bb: { rawBase, cap, capCut, base, advance, cashCap, limit, overdueCut, buyerCut, cnCut, verifiedMonthly, grossOpen: openAR }, inv, cns };
+}
+
+/* ---------- rendering ---------- */
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function opts(){ return { adv:+$("lvAdv").value/100, dpd:+$("lvDpd").value, cap:+$("lvCap").value/100, late:+$("lvLate").value, cash:+$("lvCash").value }; }
+function run(){
+  const o = opts();
+  $("oAdv").textContent = pct(o.adv); $("oDpd").textContent = o.dpd + " days"; $("oCap").textContent = pct(o.cap);
+  $("oLate").textContent = o.late + " days"; $("oCash").textContent = o.cash + "×";
+  try { A = analyse(raw, o); } catch (e) { toast(e.message); console.error(e); return; }
+  render();
+}
+function render(){
+  const c = raw.company || {};
+  $("coName").textContent = c.name || "Uploaded company";
+  $("coMeta").textContent = [c.sector, c.city, c.cr && "CR " + c.cr, c.vat && "VAT " + c.vat, `12 months to ${A.asOf}`].filter(Boolean).join(" · ");
+  $("srcBanner").innerHTML = state.source === "sample"
+    ? "Showing <b>made-up sample data</b>: 1 wholesaler, 12 months of invoices and bank transactions. Upload your own files with the buttons above to analyse them instead."
+    : `Showing uploaded files: <b>${esc(state.invFile || "sample invoices")}</b> and <b>${esc(state.bankFile || "sample bank statement")}</b>.`;
+  const [sev, label] = A.verdict;
+  $("verdictPill").className = "pill " + sev; $("verdictPill").textContent = label;
+  $("limitBig").textContent = SAR(A.bb.limit);
+  $("limitNote").textContent = `Indicative invoice-financing limit. ${A.bb.limit === A.bb.cashCap ? "Capped by monthly verified collections." : "Set by the borrowing base."}`;
+  $("scorecard").innerHTML = A.sc.map(s => `<div class="score-row"><span class="dot ${s.sev}"></span><div><b>${esc(s.name)}</b><div class="why">${esc(s.why)}</div></div><span class="num">${esc(s.value)}</span></div>`).join("");
+
+  const k = [
+    ["Net sales, 12 months", SAR(A.netSales), "after credit notes, ex-VAT"],
+    ["Average month", SAR(A.mean), `peak ${monLabel(A.months[A.ms.indexOf(Math.max(...A.ms))])}`],
+    ["Cash-verified", pct(A.verRatio,1), `${sarK(A.verified)} of ${sarK(A.paidSheet)} paid`],
+    ["DSO", Math.round(A.dso) + " days", `terms average ${Math.round(A.termsW)} days`],
+    ["Open receivables", SAR(A.openAR), "at as-of date, incl. VAT"],
+    ["Top buyer", pct(A.top1.sales/A.totSales,1), A.top1.name],
+    ["Lowest balance", SAR(A.minBal.balance), A.minBal.date],
+    ["Existing loan", A.debtMonthly ? SAR(A.debtMonthly) + "/mo" : "None seen", A.dscr ? `cover ${A.dscr.toFixed(2)}×` : ""],
+  ];
+  $("kpis").innerHTML = k.map(([l,v,h]) => `<div class="kpi"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span><span class="h">${esc(h)}</span></div>`).join("");
+  const rec = A.months.map(m => A.byMonth[m].receipts);
+  $("salesNote").textContent = `Bank receipts include VAT (15%) and payments for invoices issued before ${monLabel(A.months[0])}, so they run above net sales in a healthy month. The gap that matters is a buyer whose invoices never turn into receipts (see Data checks).`;
+
+  // charts
+  if (window.Chart) {
+    const grid = css("--line"), ink = css("--muted");
+    Chart.defaults.font.family = "IBM Plex Sans, system-ui, sans-serif"; Chart.defaults.color = ink;
+    const common = { responsive:true, maintainAspectRatio:false, animation:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: x => `${x.dataset.label}: ${SAR(x.parsed.y)}` } } },
+      scales:{ x:{ grid:{display:false} }, y:{ grid:{color:grid}, border:{display:false}, ticks:{ callback: v => sarK(v).replace("SAR ","") } } } };
+    const mk = (id, cfg) => { charts[id]?.destroy(); charts[id] = new Chart($(id), cfg); };
+    mk("chSales", { type:"bar", data:{ labels:A.months.map(monLabel), datasets:[
+      { label:"Net sales", data:A.ms, backgroundColor:css("--chart-a"), borderRadius:3, order:2 },
+      { label:"Customer money in bank", data:rec, type:"line", borderColor:css("--chart-b"), backgroundColor:css("--chart-b"), pointRadius:3, tension:.25, order:1 } ] }, options:common });
+    const bal = A.balances;
+    mk("chBal", { type:"line", data:{ labels:bal.map(t => t.date), datasets:[
+      { label:"Balance", data:bal.map(t => t.balance), borderColor:css("--chart-a"), borderWidth:1.5, pointRadius:0, fill:false, tension:0 },
+      { label:"Lowest point", data:bal.map(t => t === A.minBal ? t.balance : null), pointRadius:5, pointBackgroundColor:css("--chart-c"), showLine:false } ] },
+      options:{ ...common, scales:{ ...common.scales, x:{ grid:{display:false}, ticks:{ maxTicksLimit:7, callback:function(v){ const s=this.getLabelForValue(v); return monLabel(s); } } } } } });
+    mk("chAging", { type:"bar", data:{ labels:A.aging.map(a => a.label), datasets:[{ label:"Outstanding", data:A.aging.map(a => a.amount),
+      backgroundColor:A.aging.map((a,i) => i === 0 ? css("--chart-a") : i < 3 ? css("--chart-b") : css("--bad")), borderRadius:3 }] },
+      options:{ ...common, indexAxis:"y", scales:{ x:{ grid:{color:grid}, ticks:{ callback: v => sarK(v).replace("SAR ","") } }, y:{ grid:{display:false} } } } });
+  }
+
+  // borrowing base
+  const b = A.bb, o = opts();
+  $("bbCalc").innerHTML = [
+    ["Open receivables (incl. VAT)", SAR(b.grossOpen)],
+    ["− buyers excluded (cash, unverified, chronic late)", "−" + SAR(b.buyerCut + sum(A.buyers.filter(x=>x.cash), x=>x.open))],
+    [`− invoices more than ${o.dpd} days overdue`, "−" + SAR(b.overdueCut)],
+    ["− credit notes issued in the last 60 days", "−" + SAR(b.cnCut)],
+    [`− above the ${pct(o.cap)} single-buyer cap`, "−" + SAR(b.capCut)],
+    ["= Eligible receivables", SAR(b.base)],
+    [`× advance rate ${pct(o.adv)}`, SAR(b.advance)],
+    [`Cash-flow cap: ${o.cash}× monthly verified collections`, SAR(b.cashCap)],
+  ].map(([l,v]) => `<div><span>${esc(l)}</span><span class="num">${esc(v)}</span></div>`).join("") + `<div class="total"><span>Indicative limit (lower of the two)</span><span class="num">${SAR(b.limit)}</span></div>`;
+  const excl = A.buyers.filter(x => x.exclReason && !x.cash);
+  $("bbWhy").innerHTML = `<p style="margin-top:0">The base only counts invoices a bank could actually collect on. ${excl.length ? "Excluded buyers: " + excl.map(x => `<b>${esc(x.name)}</b> (${esc(x.exclReason.toLowerCase())})`).join(", ") + "." : ""}</p>
+    <p>The cash-flow cap stops the limit running ahead of what the business really collects: a facility the size of more than ${o.cash}× a month of verified collections would rely on receivables we cannot see being paid.</p>
+    <p>Existing loan instalments (${SAR(A.debtMonthly)}/month) are not deducted here; the bank adds them in its own affordability check.</p>`;
+
+  // buyers table
+  const rows = A.buyers.map(x => {
+    const vr = x.verRatio == null ? "–" : pct(x.verRatio);
+    const vrCls = x.verRatio == null ? "neutral" : x.verRatio >= 0.9 ? "good" : x.verRatio >= 0.75 ? "warn" : "bad";
+    const late = x.avgLate == null ? "–" : (x.avgLate > 0 ? "+" : "") + x.avgLate.toFixed(1);
+    return `<tr class="${x.exclReason && !x.cash ? "excluded" : ""}"><td>${esc(x.name)}</td><td class="n">${SAR(x.sales)}</td><td class="n">${pct(x.sales/A.totSales,1)}</td><td class="n">${x.cash ? "Cash" : Math.round(x.avgTerms) + "d"}</td><td class="n">${late}</td><td class="n">${x.onTimeRate == null ? "–" : pct(x.onTimeRate)}</td><td class="n">${x.open > 1 ? SAR(x.open) : "–"}</td><td><span class="pill ${vrCls}">${vr}</span></td><td class="n">${x.elig ? SAR(x.elig) : "–"}</td><td class="muted">${esc(x.exclReason && !x.cash ? x.exclReason : x.eligRaw > x.elig ? "Capped" : "")}</td></tr>`;
+  }).join("");
+  $("buyerTbl").innerHTML = `<thead><tr><th>Buyer</th><th class="n">Net sales</th><th class="n">Share</th><th class="n">Terms</th><th class="n">Avg days late</th><th class="n">Paid on time</th><th class="n">Open now</th><th>In bank</th><th class="n">Eligible</th><th>Note</th></tr></thead><tbody>${rows}</tbody>`;
+
+  // flags
+  const order = { bad:0, warn:1, good:2 };
+  $("flags").innerHTML = A.flags.slice().sort((a,b) => order[a.sev]-order[b.sev]).map(f => `<div class="flag ${f.sev}"><span class="pill ${f.sev}">${f.sev === "bad" ? "Blocking" : f.sev === "warn" ? "Check" : "OK"}</span><div><b>${esc(f.title)}${f.fixed ? ' <span class="pill neutral">fixed in numbers</span>' : ""}</b><p>${esc(f.body)}</p>${f.rows?.length ? `<details><summary>Show ${f.rows.length} example${f.rows.length>1?"s":""}</summary><ul class="tight mono">${f.rows.map(r => `<li>${esc(r)}</li>`).join("")}</ul></details>` : ""}</div></div>`).join("");
+  if (!$("pkgPanel").hidden) showPackage();
+}
+
+/* ---------- package for the bank ---------- */
+function buildPackage(){
+  const c = raw.company || {};
+  return {
+    schema: "qawafel.financing-package/v1", package_id: "PKG-DEMO-0001", version: 1, generated_at: new Date().toISOString(),
+    applicant: { legal_name: c.name, cr_number: c.cr, vat_number: c.vat, city: c.city, sector: c.sector },
+    period: { from: A.months[0] + "-01", to: A.asOf },
+    consent: { bank_partner: "Demo Bank (fictional)", granted_at: "2026-10-02T09:14:00+03:00", scope: ["invoices", "bank_statements"] },
+    summary: { readiness: A.verdict[1], indicative_limit_sar: Math.round(A.bb.limit), scorecard: A.sc.map(s => ({ metric:s.name, status:s.sev, value:s.value })) },
+    metrics: {
+      net_sales_sar: Math.round(A.netSales), avg_monthly_sales_sar: Math.round(A.mean), sales_cov: +A.cov.toFixed(3), growth_last3_vs_first3: +A.growth.toFixed(3),
+      cash_verified_ratio: +A.verRatio.toFixed(3), dso_days: Math.round(A.dso), avg_days_late: +A.lateAll.toFixed(1), top_buyer_share: +(A.top1.sales/A.totSales).toFixed(3),
+      top5_share: +A.top5.toFixed(3), hhi: +A.hhi.toFixed(4), open_receivables_sar: Math.round(A.openAR), min_balance_sar: Math.round(A.minBal.balance), min_balance_date: A.minBal.date,
+      existing_debt_service_monthly_sar: Math.round(A.debtMonthly), debt_service_cover: A.dscr ? +A.dscr.toFixed(2) : null,
+    },
+    monthly: A.months.map((m,i) => ({ month:m, net_sales_sar:Math.round(A.ms[i]), invoice_count:A.byMonth[m].count, credit_notes_sar:Math.round(A.byMonth[m].cn), bank_receipts_sar:Math.round(A.byMonth[m].receipts), month_end_balance_sar: A.monthEnd[i] != null ? Math.round(A.monthEnd[i]) : null })),
+    aging: A.aging.map(a => ({ bucket:a.label, amount_sar:Math.round(a.amount) })),
+    borrowing_base: { policy: opts(), eligible_receivables_sar: Math.round(A.bb.base), advance_sar: Math.round(A.bb.advance), cash_flow_cap_sar: Math.round(A.bb.cashCap), indicative_limit_sar: Math.round(A.bb.limit) },
+    buyers: A.buyers.map(b => ({ name:b.name, net_sales_sar:Math.round(b.sales), share:+(b.sales/A.totSales).toFixed(4), cash_buyer:b.cash, avg_days_late: b.avgLate == null ? null : +b.avgLate.toFixed(1), open_sar:Math.round(b.open), bank_verified_ratio: b.verRatio == null ? null : +b.verRatio.toFixed(3), eligible_sar:Math.round(b.elig||0), excluded_reason: b.cash ? null : b.exclReason })),
+    flags: A.flags.map(f => ({ severity: f.sev === "bad" ? "blocking" : f.sev === "warn" ? "review" : "ok", title:f.title, detail:f.body, auto_corrected: !!f.fixed })),
+    source_files: [ { type:"invoices", name: state.invFile || "invoices.xlsx", rows: raw.invoices.length }, { type:"bank_statement", name: state.bankFile || "bank_statement.pdf", rows: raw.bank.length } ],
+  };
+}
+function showPackage(){ $("pkgPanel").hidden = false; $("pkgJson").textContent = JSON.stringify(buildPackage(), null, 2); }
+$("pkgBtn").onclick = () => { showPackage(); $("pkgPanel").scrollIntoView({ behavior:"smooth" }); };
+$("copyPkg").onclick = () => {
+  const t = $("pkgJson").textContent;
+  navigator.clipboard?.writeText(t).then(() => toast("Copied the package JSON"), () => { const r = document.createRange(); r.selectNodeContents($("pkgJson")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press Ctrl/Cmd+C to copy."); });
+};
+
+/* ---------- uploads ---------- */
+function toast(msg){ const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4000); }
+function readFile(f){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsArrayBuffer(f); }); }
+$("invFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const wb = XLSX.read(await readFile(f), { cellDates:true });
+    const sheet = wb.Sheets[wb.SheetNames.find(n => /inv/i.test(n)) || wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval:"" });
+    raw = { ...raw, company: { name: f.name.replace(/\.[^.]+$/, "") }, invoices: mapRows(rows) };
+    state.source = "upload"; state.invFile = f.name; run(); toast(`Read ${raw.invoices.length} invoice rows from ${f.name}`);
+  } catch (err) { toast("Couldn't read that file. " + err.message); }
+  e.target.value = "";
+};
+$("bankFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const wb = XLSX.read(await readFile(f), { raw:false });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:"" });
+    const g = (r, ...ks) => { const k = Object.keys(r).find(x => ks.includes(x.trim().toLowerCase())); return k ? r[k] : ""; };
+    const bank = rows.map(r => ({ date: toIso(g(r,"date","value date","transaction date")), description: String(g(r,"description","details","narrative")),
+      amount: numv(g(r,"credit")) - numv(g(r,"debit")) || numv(g(r,"amount")), balance: numv(g(r,"balance")) })).filter(t => t.date);
+    if (!bank.length) throw new Error("Expected columns: date, description, debit, credit, balance.");
+    raw = { ...raw, bank }; state.source = "upload"; state.bankFile = f.name; run(); toast(`Read ${bank.length} bank transactions from ${f.name}`);
+  } catch (err) { toast("Couldn't read that file. " + err.message); }
+  e.target.value = "";
+};
+$("resetBtn").onclick = () => { raw = fromSample(); state = { source:"sample" }; run(); };
+["lvAdv","lvDpd","lvCap","lvLate","lvCash"].forEach(id => $(id).addEventListener("input", run));
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => A && render());
+new MutationObserver(() => A && render()).observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] });
+
+raw = fromSample();
+run();
+</script>
